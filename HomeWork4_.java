@@ -1,11 +1,11 @@
 /**
  * Java 1. Home Work Lesson 4. Tic-tac-toe in console upgraded:
- * 1. game field extended up to 99 x 99 and may be different
- * 2. sequence of equally filled cells may be 1...99
- * 3 AI blocks a maximal sequence
- * 4. method isMapFull() excluded , instead turn counter entered
- * * @author Michail
- * @version dated Aug 21, 2018
+ * checkWin() changed, method looks for x-cells via empty cell after current point or
+ * sequence of several points "x"( additional elements vect[5]=0/1 & vect[6]=0/1 ).
+ * AI analyzes current point and makes turn in direction of one found before x-cell (method aiTurnNew()).
+ * If no x-cells via empty cell in current line, AI uses method aiTurn()
+ * *@author Michail
+ * @version dated Aug 24, 2018
  */
 import java.util.Arrays;
 import java.util.Random;
@@ -24,8 +24,8 @@ public class HomeWork4_{
     int lenwin; // number of cells for win
     int len ;
     int le[] = new int[4];  // numbers of equal cells
-    int vect[] = new int[5]; // array of lenght & coordinates of equal cells sequence
-    int vect_[] = new int[5]; // --//-- additional
+    int vect[] = new int[7]; // array of lenght & coordinates of equal cells sequence
+    int vect_[] = new int[7]; // --//-- additional
     char[][] map = new char [99][99];
     Scanner sc = new Scanner(System.in);
     Random rand = new Random();
@@ -43,6 +43,8 @@ public class HomeWork4_{
         initMap();
         while (true) {
             humanTurn();
+            map[xcur][ycur] = DOT_X;
+            turn_ct++;
             printMap();
             if (checkWin()) {
                 System.out.println("Your Win!");
@@ -52,8 +54,10 @@ public class HomeWork4_{
                 System.out.println("Sorry, DRAW");
                 break;
             }
-            aiTurn();
-            System.out.println("AI turns: ");
+            aiTurnNew();
+            map[xcur][ycur] = DOT_O;
+            turn_ct++;
+            System.out.println("AI turns:  " + (xcur + 1) + "  " + (ycur + 1));
             printMap();
             if (checkWin()) {
                 System.out.println("AI Win!");
@@ -89,7 +93,6 @@ public class HomeWork4_{
             xcur = sc.nextInt() - 1;
             ycur = sc.nextInt() - 1;
         } while (!isCellValid());
-        map[xcur][ycur] = DOT_X;
     }
     void aiTurn(){
         xcur = vect[1];
@@ -97,14 +100,30 @@ public class HomeWork4_{
         if (!isCellValid()) {
             xcur = vect[3];
             ycur = vect[4];
-            if (!isCellValid())
+            if (!isCellValid()) {
                 do {
                     xcur = rand.nextInt(xmax + 1);
                     ycur = rand.nextInt(ymax + 1);
                     //System.out.println(xcur + "  " + ycur);
                 } while (!isCellValid());
+            }
         }
-        map[xcur][ycur] = DOT_O;
+        return;
+    }
+
+    void aiTurnNew(){
+        if (vect[6] == 1) {
+            xcur = vect[3];
+            ycur = vect[4];
+            if (isCellValid()) return;
+        }
+        if (vect[5] == 1) {
+            xcur = vect[1];
+            ycur = vect[2];
+            if (isCellValid()) return;
+        }
+        aiTurn();
+        return;
     }
 
     boolean checkWin(){
@@ -117,6 +136,7 @@ public class HomeWork4_{
         }
         vect[1] = i;
         vect[2] = ycur;
+        vect[5] = isDotX(i - 1, ycur);
 //  check vertical cells to down
         i = xcur + 1; // next vertical cell to down
         while (i <= xmax && len < lenwin) {
@@ -126,6 +146,7 @@ public class HomeWork4_{
         vect[0] = len;
         vect[3] = i;
         vect[4] = ycur;
+        vect[6] = isDotX(i + 1, ycur);
 //  check horizontal cells to left
         int j = ycur - 1;
         len = 1; // equally filled cells counter's reset
@@ -135,7 +156,7 @@ public class HomeWork4_{
         }
         vect_[1] = xcur;
         vect_[2] = j;
-        if (len == lenwin) return true;
+        vect_[5] = isDotX(xcur, j - 1);
 //  check horizontal cells to right
         j = ycur + 1;
         while (j <= ymax && len < lenwin) {
@@ -145,6 +166,7 @@ public class HomeWork4_{
         vect_[0] = len;
         vect_[3] = xcur;
         vect_[4] = j;
+        vect_[6] = isDotX(xcur, j + 1);
         selectMax_vect();
 //  check diagonal cells to top-left
         i = xcur - 1;
@@ -157,6 +179,7 @@ public class HomeWork4_{
         }
         vect_[1] = i;
         vect_[2] = j;
+        vect_[5] = isDotX(i - 1 , j - 1);
 //  check diagonal cells to down-right
         i = xcur + 1;
         j = ycur + 1;
@@ -168,6 +191,7 @@ public class HomeWork4_{
         vect_[0] = len;
         vect_[3] = i;
         vect_[4] = j;
+        vect_[6] = isDotX(i + 1, j + 1);
         selectMax_vect();
 //  check diagonal cells to up-right
         i = xcur - 1;
@@ -178,8 +202,9 @@ public class HomeWork4_{
             i--;
             j++;
         }
-            vect_[1] = i;
-            vect_[2] = j;
+        vect_[1] = i;
+        vect_[2] = j;
+        vect_[5] = isDotX(i - 1, j + 1);
 //  check diagonal cells to top-left
         i = xcur + 1;
         j = ycur - 1;
@@ -191,6 +216,7 @@ public class HomeWork4_{
         vect_[0] = len;
         vect_[3] = i;
         vect_[4] = j;
+        vect_[6] = isDotX(i + 1, j - 1);
         selectMax_vect();
         if (vect[0] == lenwin) return true;
         return false;
@@ -204,11 +230,10 @@ public class HomeWork4_{
         return false;
     }
     void selectMax_vect() {
-        if (vect_[0] > vect[0]) {
+        if (vect_[0] > vect[0]){
             for (int k=0; k < vect.length; k++)
                 vect[k] = vect_[k];
         }
-       // System.out.println(Arrays.toString(vect_) + Arrays.toString(vect));
     }
     boolean isMapFull() {
             for (int i = 0; i < SIZE; i++)
@@ -222,9 +247,12 @@ public class HomeWork4_{
         if (xcur < 0 || ycur < 0 || xcur > xmax || ycur > ymax ||
                 (map[xcur][ycur] != DOT_EMPTY) || (turn_ct == turns))
             return false;
-        else
-            turn_ct++;
         return true;
+    }
+
+    int isDotX(int x , int y) {
+        if (x < 0 || y < 0 || x > xmax || y > ymax || (map[x][y] != DOT_X)) return 0;
+        return 1;
     }
 }
 
