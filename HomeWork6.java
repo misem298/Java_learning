@@ -1,8 +1,15 @@
+/**
+ * Java 1. Home Work Lesson 6.
+ * Classes Cog, Cat, Dog1 created from abstract class Animal
+ * Methods run, swim, jump with
+ * *@author Michail
+ * @version dated Aug 23, 2018
+ */
 import java.util.Scanner;
 public class HomeWork6 {
     static Scanner sc = new Scanner(System.in);
     static float run_dist = 1;
-    static float sweem_dist = 1;
+    static float swim_dist = 1;
     static float jump_dist = 1;
     public static void main(String[] args) {
         //Cat cat = new Cat("Murzik", "white", 3);
@@ -15,18 +22,18 @@ public class HomeWork6 {
                         400f, 15f, 8f)};
         for (Animal animal : animals) {
             System.out.println(animal + " run: " + animal.run_limit +
-                    " sweem: " + animal.sweem_limit + " jump: " + animal.jump_limit);
+                    " swim: " + animal.swim_limit + " jump: " + animal.jump_limit);
            //System.out.println(animal + " run: " + animal.run(300f) +
-           //        " sweem: " + animal.sweem(5f) + " jump: " + animal.jump(15f));
+           //        " swim: " + animal.swim(5f) + " jump: " + animal.jump(15f));
         }
-        while (run_dist + sweem_dist + jump_dist != 0) {
-            System.out.println("Enter run distance, sweem distance and jump height OR 0,0,0 to exit");
+        while (run_dist + swim_dist + jump_dist != 0) {
+            System.out.println("Enter run distance, swim distance and jump height OR 0,0,0 to exit");
             run_dist = sc.nextFloat();
-            sweem_dist = sc.nextFloat();
+            swim_dist = sc.nextFloat();
             jump_dist = sc.nextFloat();
             for (Animal animal : animals) {
                 System.out.println(animal + "*** run: " + animal.run(run_dist) +
-                        " sweem: " + animal.sweem(sweem_dist) + " jump: " + animal.jump(jump_dist));
+                        " swim: " + animal.swim(swim_dist) + " jump: " + animal.jump(jump_dist));
             }
         }
     }
@@ -34,8 +41,8 @@ public class HomeWork6 {
 
 class Cat extends Animal {
     Cat(String name, String color, int age,
-        float run_limit, float sweem_limit, float jump_limit) {
-        super(name, color, age, run_limit, sweem_limit, jump_limit);
+        float run_limit, float swim_limit, float jump_limit) {
+        super(name, color, age, run_limit, swim_limit, jump_limit);
     }
     public String voice() {
             return "miau";
@@ -43,22 +50,22 @@ class Cat extends Animal {
 }
  class Dog1 extends Dog {
     Dog1(String name, String color, int age,
-        float run_limit, float sweem_limit, float jump_limit) {
-        super(name, color, age, run_limit, sweem_limit, jump_limit);
+        float run_limit, float swim_limit, float jump_limit) {
+        super(name, color, age, run_limit, swim_limit, jump_limit);
     }
     public String voice() {return "gaf-gaf"; }
 }
 class Dog extends Animal {
     Dog(String name, String color, int age,
-        float run_limit, float sweem_limit, float jump_limit) {
-        super(name, color, age, run_limit, sweem_limit, jump_limit);
+        float run_limit, float swim_limit, float jump_limit) {
+        super(name, color, age, run_limit, swim_limit, jump_limit);
     }
    public String voice() {return "gaf"; }
 
 }
 
   //  interface IAnimal{
-  //      abstract String sweem(int dist);
+  //      abstract String swim(int dist);
   //      abstract boolean run(int dist);
   //  }
 
@@ -70,25 +77,25 @@ abstract class Animal implements IAnimal {
         private String color;
         private int age;
         protected float run_limit;
-        protected float sweem_limit;
+        protected float swim_limit;
         protected float jump_limit;
 
         Animal(String name, String color, int age,
-               float run_limit, float sweem_limit, float jump_limit ){
+               float run_limit, float swim_limit, float jump_limit ){
             this.name = name;
             this.color = color;
             this.run_limit = run_limit;
-            this.sweem_limit = sweem_limit;
+            this.swim_limit = swim_limit;
             this.jump_limit = setJump_limit(jump_limit);// jump_limit;
             this.age = setAge(age);
         }
     abstract String voice();
 
-       public int setAge(int age) {
-            if (age>0)
-                this.age = age;
-            return age;
-        }
+    public int setAge(int age) {
+        if (age>0)
+            this.age = age;
+        return age;
+    }
         float setJump_limit(float jump_limit) {
            if (jump_limit > 0 && jump_limit < 10)
                this.jump_limit = jump_limit;
@@ -110,8 +117,8 @@ abstract class Animal implements IAnimal {
         if (run_limit >= dist) {return true;}
         return false;
     }
-    public boolean sweem(float dist) {
-        if (sweem_limit >= dist) {return true;}
+    public boolean swim(float dist) {
+        if (swim_limit >= dist) {return true;}
         return false;
     }
     public boolean jump(float dist) {
